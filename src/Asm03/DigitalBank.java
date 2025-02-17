@@ -105,7 +105,7 @@ public class DigitalBank {
         }
 
         // Hiển thị thông tin khách hàng
-        System.out.printf("%-12s | %-10s | %-8s | %,dđ\n",
+        System.out.printf("%-12s | %-10s | %-8s | %,.0fđ\n",
                 customer.getCustomerId(), customer.getName(),
                 customer.isPremium() ? "Premium" : "Normal", customer.getBalance());
 

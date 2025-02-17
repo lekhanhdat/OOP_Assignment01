@@ -2,7 +2,7 @@ package Asm03;
 
 public class Account {
     private String accountNumber;
-    protected long balance;
+    protected double balance;
     protected Customer customer;
 
 
@@ -12,7 +12,7 @@ public class Account {
     }
 
     public void displayInformation() {
-        System.out.printf("%-10s | %-6s | %,dđ\n", accountNumber, getAccountType(), balance);
+        System.out.printf("%-10s | %-6s | %,.0fđ\n", accountNumber, getAccountType(), balance);
     }
 
     public String getAccountType() {
@@ -31,28 +31,9 @@ public class Account {
         return accountNumber;
     }
 
-    public boolean withdraw(double amount) {
-        if (amount <= 0 || amount % 10000 != 0) {
-            System.out.println("⚠️ Số tiền rút phải là bội số của 10.000đ.");
-            return false;
-        }
-
-        if (balance - amount < 50000) {
-            System.out.println("⚠️ Số dư còn lại sau khi rút phải >= 50.000đ.");
-            return false;
-        }
-
-        balance -= amount;
-        return true;
-    }
 
     public boolean isPremium() {
         return balance >= 10000000; // Ví dụ: Premium nếu số dư >= 10 triệu
-    }
-
-
-    protected void setBalance(long balance) {
-        this.balance = balance;
     }
 
 

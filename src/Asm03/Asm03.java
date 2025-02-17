@@ -9,7 +9,6 @@ public class Asm03 {
     private static final DigitalBank activeBank = new DigitalBank();
     private static final String CUSTOMER_ID = "048203002547";
     private static final String CUSTOMER_NAME = "FUNIX";
-    private static Customer customer; // Thêm nếu chưa có
 
 
 
@@ -33,15 +32,13 @@ public class Asm03 {
 
             switch (choice) {
                 case 1:
-                    activeBank.showCustomer("048203002547");
+                    activeBank.showCustomer(CUSTOMER_ID);
                     break;
                 case 2:
                     activeBank.addAtmAccount(CUSTOMER_ID);
                     break;
-                case 4:
-                    Withdraw withdraw = new Withdraw();
-                    Customer customer = activeBank.getCustomerById("customerId"); // Lấy khách hàng từ danh sách
-                    withdraw.withdrawMoney(customer, scanner);
+                case 3:
+                    activeBank.addCreditAccount(CUSTOMER_ID);
                     break;
                 case 6:
                     System.out.println("Thoát chương trình.");

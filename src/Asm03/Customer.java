@@ -1,4 +1,4 @@
-package Asm03;  // Thay bằng package thực tế của bạn
+package Asm03;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ public class Customer {
     private String name;
     private boolean isPremium;
     private List<Account> accounts = new ArrayList<>();
-    private long balance;
+    private double balance;
 
 
     public Customer(String customerId, String name, boolean isPremium) {
@@ -23,15 +23,22 @@ public class Customer {
     public String getName() { return name; }
     public boolean isPremiumAccount() { return isPremium; }
     public List<Account> getAccounts() { return accounts; }
-    public long getBalance() {
-        return (long) this.balance;
+
+
+    public double getBalance() {
+        double totalBalance = 0;
+        for (Account account : accounts) {
+            totalBalance += account.getBalance();
+        }
+        return totalBalance;
     }
+
 
 
     public void displayInformation() {
         String customerType = isPremium ? "Premium" : "Normal";
-        System.out.printf("%-12s | %15s | %-9s | %,dđ%n",
-                getCustomerId(), getName(), customerType, (long) getBalance());
+        System.out.printf("%-12s | %15s | %-9s | %,.0fđ\n",
+                getCustomerId(), getName(), customerType, getBalance());
 
 
 
