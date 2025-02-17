@@ -6,7 +6,7 @@ public class Account {
     protected Customer customer;
 
 
-    public Account(String accountNumber, long balance) {
+    public Account(String accountNumber, double balance) {
         this.accountNumber = accountNumber;
         this.balance = balance;
     }

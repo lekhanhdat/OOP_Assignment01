@@ -141,11 +141,11 @@ public class DigitalBank {
         }
 
         // Nhập hạn mức tín dụng
-        long creditLimit;
+        double creditLimit;
         while (true) {
             System.out.print("Nhập hạn mức tín dụng: ");
             try {
-                creditLimit = Long.parseLong(scanner.nextLine());
+                creditLimit = Double.parseDouble(scanner.nextLine());
                 if (creditLimit <= 0) {
                     System.out.println("⚠️ Hạn mức tín dụng phải lớn hơn 0.");
                     continue;

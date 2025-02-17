@@ -5,7 +5,7 @@ public class CreditAccount extends Account {
 
 
     public CreditAccount(String accountNumber, double creditLimit) {
-        super(accountNumber, 0); // Tài khoản tín dụng ban đầu có số dư 0
+        super(accountNumber, creditLimit); // Tài khoản tín dụng ban đầu có số dư 0
         this.creditLimit = creditLimit;
     }
 
