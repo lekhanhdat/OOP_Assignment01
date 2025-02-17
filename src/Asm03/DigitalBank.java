@@ -146,8 +146,11 @@ public class DigitalBank {
             System.out.print("Nhập hạn mức tín dụng: ");
             try {
                 creditLimit = Double.parseDouble(scanner.nextLine());
-                if (creditLimit <= 0) {
-                    System.out.println("⚠️ Hạn mức tín dụng phải lớn hơn 0.");
+                if (creditLimit <= 50000) {
+                    System.out.println("⚠️ Hạn mức tín dụng phải lớn hơn 50.000đ.");
+                    continue;
+                } else if (creditLimit >= 100000001) {
+                    System.out.println("⚠️ Hạn mức tín dụng phải nhỏ hơn 100.000.000đ.");
                     continue;
                 }
                 break;
