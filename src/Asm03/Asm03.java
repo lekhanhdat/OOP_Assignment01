@@ -40,6 +40,9 @@ public class Asm03 {
                 case 3:
                     activeBank.addCreditAccount(CUSTOMER_ID);
                     break;
+                case 4:
+                    activeBank.withdrawMoney(CUSTOMER_ID);
+                    break;
                 case 6:
                     System.out.println("Thoát chương trình.");
                     return;

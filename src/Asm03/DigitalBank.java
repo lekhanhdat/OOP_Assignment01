@@ -170,4 +170,82 @@ public class DigitalBank {
         System.out.println("================================");
     }
 
+    public void withdrawMoney(String customerId) {
+        System.out.println("===== RÚT TIỀN =====");
+        Customer customer = getCustomerById(customerId);
+        if (customer == null) {
+            System.out.println("⚠️ Không tìm thấy khách hàng.");
+            return;
+        }
+
+        // Hiển thị tài khoản của khách hàng
+        System.out.println("Chọn tài khoản rút tiền:");
+        int index = 1;
+        List<Account> accounts = customer.getAccounts();
+        for (Account acc : accounts) {
+            System.out.printf("%d. Số tài khoản: %s | Loại: %-8s | Số dư: %,.0fđ\n", index++, acc.getAccountNumber(), acc.getAccountType(), acc.getBalance());
+        }
+        System.out.print("Chọn tài khoản (1 - " + accounts.size() + "): ");
+        int choice = Integer.parseInt(scanner.nextLine());
+        Account selectedAccount = accounts.get(choice - 1);
+
+        // Kiểm tra số tiền cần rút
+        double withdrawAmount = 0;
+        while (true) {
+            System.out.print("Nhập số tiền cần rút: ");
+            try {
+                withdrawAmount = Double.parseDouble(scanner.nextLine());
+                if (withdrawAmount < 50000) {
+                    System.out.println("⚠️ Số tiền rút phải lớn hơn hoặc bằng 50.000đ.");
+                    continue;
+                }
+                if (selectedAccount instanceof Account) {  // Tài khoản ATM
+                    if (withdrawAmount > 5000000 && !selectedAccount.isPremium()) {
+                        System.out.println("⚠️ Số tiền rút không được quá 5.000.000đ đối với tài khoản thường.");
+                        continue;
+                    }
+                    if (withdrawAmount % 10000 != 0) {
+                        System.out.println("⚠️ Số tiền rút phải là bội số của 10.000đ.");
+                        continue;
+                    }
+                    double remainingBalance = selectedAccount.getBalance() - withdrawAmount;
+                    if (remainingBalance < 50000) {
+                        System.out.println("⚠️ Số dư còn lại phải lớn hơn hoặc bằng 50.000đ.");
+                        continue;
+                    }
+                } else {  // Tài khoản tín dụng
+                    CreditAccount creditAccount = (CreditAccount) selectedAccount;
+                    if (withdrawAmount > creditAccount.getCreditLimit()) {
+                        System.out.println("⚠️ Số tiền rút không được vượt quá hạn mức tín dụng.");
+                        continue;
+                    }
+                    double fee = selectedAccount.isPremium() ? 0.01 : 0.05;
+                    double feeAmount = withdrawAmount * fee;
+                    double totalDeducted = withdrawAmount + feeAmount;
+                    if (totalDeducted > creditAccount.getCreditLimit()) {
+                        System.out.println("⚠️ Số dư tín dụng không đủ để chi trả phí giao dịch.");
+                        continue;
+                    }
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Vui lòng nhập số hợp lệ.");
+            }
+        }
+
+        // Cập nhật tài khoản sau khi rút tiền
+        if (selectedAccount instanceof Account) {  // Tài khoản ATM
+            selectedAccount.balance -= withdrawAmount;
+            System.out.println("✅ Rút tiền thành công! Số dư còn lại: " + String.format("%.2f", selectedAccount.getBalance()) + "đ");
+        } else {  // Tài khoản tín dụng
+            CreditAccount creditAccount = (CreditAccount) selectedAccount;
+            double fee = selectedAccount.isPremium() ? 0.01 : 0.05;
+            double feeAmount = withdrawAmount * fee;
+            creditAccount.balance -= (withdrawAmount + feeAmount);
+            System.out.println("✅ Rút tiền thành công! Hạn mức còn lại: " + String.format("%.2f", creditAccount.getCreditLimit() - creditAccount.balance) + "đ");
+        }
+        System.out.println("================================");
+    }
+
+
 }
