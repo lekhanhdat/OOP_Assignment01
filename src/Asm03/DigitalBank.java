@@ -180,17 +180,18 @@ public class DigitalBank {
 
         // Hiển thị tài khoản của khách hàng
         System.out.println("Chọn tài khoản rút tiền:");
-        int index = 1;
         List<Account> accounts = customer.getAccounts();
-        for (Account acc : accounts) {
-            System.out.printf("%d. Số tài khoản: %s | Loại: %-8s | Số dư: %,.0fđ\n", index++, acc.getAccountNumber(), acc.getAccountType(), acc.getBalance());
+        for (int i = 0; i < accounts.size(); i++) {
+            System.out.printf("%d. Số tài khoản: %s | Loại: %-8s | Số dư: %,.0fđ\n",
+                    i + 1, accounts.get(i).getAccountNumber(),
+                    accounts.get(i).getAccountType(), accounts.get(i).getBalance());
         }
+
         System.out.print("Chọn tài khoản (1 - " + accounts.size() + "): ");
         int choice = Integer.parseInt(scanner.nextLine());
         Account selectedAccount = accounts.get(choice - 1);
 
-        // Kiểm tra số tiền cần rút
-        double withdrawAmount = 0;
+        double withdrawAmount;
         while (true) {
             System.out.print("Nhập số tiền cần rút: ");
             try {
@@ -199,51 +200,41 @@ public class DigitalBank {
                     System.out.println("⚠️ Số tiền rút phải lớn hơn hoặc bằng 50.000đ.");
                     continue;
                 }
-                if (selectedAccount instanceof Account) {  // Tài khoản ATM
-                    if (withdrawAmount > 5000000 && !selectedAccount.isPremium()) {
-                        System.out.println("⚠️ Số tiền rút không được quá 5.000.000đ đối với tài khoản thường.");
-                        continue;
-                    }
-                    if (withdrawAmount % 10000 != 0) {
-                        System.out.println("⚠️ Số tiền rút phải là bội số của 10.000đ.");
-                        continue;
-                    }
-                    double remainingBalance = selectedAccount.getBalance() - withdrawAmount;
-                    if (remainingBalance < 50000) {
-                        System.out.println("⚠️ Số dư còn lại phải lớn hơn hoặc bằng 50.000đ.");
-                        continue;
-                    }
-                } else {  // Tài khoản tín dụng
-                    CreditAccount creditAccount = (CreditAccount) selectedAccount;
-                    if (withdrawAmount > creditAccount.getCreditLimit()) {
-                        System.out.println("⚠️ Số tiền rút không được vượt quá hạn mức tín dụng.");
-                        continue;
-                    }
-                    double fee = selectedAccount.isPremium() ? 0.01 : 0.05;
-                    double feeAmount = withdrawAmount * fee;
-                    double totalDeducted = withdrawAmount + feeAmount;
-                    if (totalDeducted > creditAccount.getCreditLimit()) {
-                        System.out.println("⚠️ Số dư tín dụng không đủ để chi trả phí giao dịch.");
-                        continue;
-                    }
-                }
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("⚠️ Vui lòng nhập số hợp lệ.");
             }
         }
 
-        // Cập nhật tài khoản sau khi rút tiền
-        if (selectedAccount instanceof Account) {  // Tài khoản ATM
-            selectedAccount.balance -= withdrawAmount;
-            System.out.println("✅ Rút tiền thành công! Số dư còn lại: " + String.format("%.2f", selectedAccount.getBalance()) + "đ");
-        } else {  // Tài khoản tín dụng
+        double fee = 0;
+        boolean transactionSuccess = false;
+
+        if (selectedAccount instanceof CreditAccount) {
             CreditAccount creditAccount = (CreditAccount) selectedAccount;
-            double fee = selectedAccount.isPremium() ? 0.01 : 0.05;
-            double feeAmount = withdrawAmount * fee;
-            creditAccount.balance -= (withdrawAmount + feeAmount);
-            System.out.println("✅ Rút tiền thành công! Hạn mức còn lại: " + String.format("%.2f", creditAccount.getCreditLimit() - creditAccount.balance) + "đ");
+            fee = selectedAccount.isPremium() ? 0.01 * withdrawAmount : 0.05 * withdrawAmount;
+            double totalAmount = withdrawAmount + fee;
+
+            if (totalAmount > creditAccount.getCreditLimit()) {
+                System.out.println("⚠️ Số tiền rút không được vượt quá hạn mức tín dụng.");
+            } else {
+                creditAccount.balance -= totalAmount;  // Trừ tiền vào tài khoản LOAN
+                creditAccount.setCreditLimit(creditAccount.getCreditLimit() - totalAmount);
+                transactionSuccess = true;
+            }
+        } else {  // Tài khoản tiết kiệm (SAVINGS)
+            if (withdrawAmount > selectedAccount.getBalance()) {
+                System.out.println("⚠️ Số dư không đủ.");
+            } else {
+                selectedAccount.balance -= withdrawAmount;
+                transactionSuccess = true;
+            }
         }
+
+        if (transactionSuccess) {
+            System.out.println("✅ Rút tiền thành công! Số dư còn lại: " + String.format("%,.0f", selectedAccount.getBalance()) + "đ");
+            TransactionLogger.printReceipt(selectedAccount.getAccountType(), selectedAccount.getAccountNumber(), withdrawAmount, selectedAccount.getBalance(), fee);
+        }
+
         System.out.println("================================");
     }
 
