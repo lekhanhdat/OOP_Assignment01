@@ -200,6 +200,15 @@ public class DigitalBank {
                     System.out.println("⚠️ Số tiền rút phải lớn hơn hoặc bằng 50.000đ.");
                     continue;
                 }
+                if (withdrawAmount % 10000 != 0) {
+                    System.out.println("⚠️ Số tiền rút phải là bội số của 10.000đ.");
+                    continue;
+                }
+                double remainingBalance = selectedAccount.getBalance() - withdrawAmount;
+                if (remainingBalance < 50000) {
+                    System.out.println("⚠️ Số dư còn lại phải lớn hơn hoặc bằng 50.000đ.");
+                    continue;
+                }
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("⚠️ Vui lòng nhập số hợp lệ.");
